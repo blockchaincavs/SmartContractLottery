@@ -8,8 +8,9 @@ import { Script } from "forge-std/Script.sol";
 contract DeployConfig is Script {
 
     // read these in from an ENV
-    uint256 public constant ETH_SEPOLIA_CHAIN_ID = 1115511;
-    uint256 public constant LOCAL_CHAIN_ID = 31137; // Anvil chainOD
+    
+    uint256 internal constant ETH_SEPOLIA_CHAIN_ID = vm.envUint("ETH_SEPOLIA_CHAIN_ID");
+    uint256 internal constant ANVIL_CHAIN_ID = vm.envUint("ANVIL_CHAIN_ID"); // Anvil chainOD
 
     error HelperConfig__InvalidChainId();
 
@@ -32,7 +33,7 @@ contract DeployConfig is Script {
     function getConfigChainByChainId(uint256 chainId) public view returns (NetworkConfig memory) {
         if (networkConfigs[chainId].vrfCoordinator != address(0)) {
             return networkConfigs[chainId];
-        } else if (chainId == LOCAL_CHAIN_ID) {
+        } else if (chainId == ANVIL_CHAIN_ID) {
             // getOrCreateAnvilEthConfig()
         } else {
             revert HelperConfig__InvalidChainId();
