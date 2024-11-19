@@ -38,7 +38,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
     RaffleState private s_raffleState;
 
     // events
-    event RaffleEnterd(address indexed player);
+    event RaffleEntered(address indexed player);
     event WinnerPicked(address indexed winner);
 
     constructor (uint256 enteranceFee, uint256 interval, address vrfCoordinator, bytes32 gasLane,
@@ -64,7 +64,7 @@ contract Raffle is VRFConsumerBaseV2Plus {
         s_players.push(payable(msg.sender));
 
         // Emit event (write to logs) to indicate a new player was added
-        emit RaffleEnterd(msg.sender);
+        emit RaffleEntered(msg.sender);
     }
 
     /**
@@ -104,10 +104,10 @@ contract Raffle is VRFConsumerBaseV2Plus {
                 extraArgs: VRFV2PlusClient._argsToBytes(VRFV2PlusClient.ExtraArgsV1({ nativePayment: false }))
             });
         // Will revert if subscription is not set and funded.
-        uint256 requestId = s_vrfCoordinator.requestRandomWords(request);
+        /* uint256 requestId = */ s_vrfCoordinator.requestRandomWords(request);
     }
 
-    function fulfillRandomWords(uint256 requestId, uint256[] calldata randomWords) internal override {
+    function fulfillRandomWords(uint256 /* requestId */, uint256[] calldata randomWords) internal override {
 
         uint256 indexOfWinner = randomWords[0] % s_players.length;
         
@@ -135,4 +135,8 @@ contract Raffle is VRFConsumerBaseV2Plus {
     function getRecentWinner() external view returns(address) {
         return s_recentWinner;
     }
+
+    function getRaffleState() external view returns(RaffleState) {
+        return s_raffleState; // enums use uint256 for each field.
+    } 
 }
